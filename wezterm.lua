@@ -10,8 +10,8 @@ local config = wezterm.config_builder()
 config.initial_cols = 120
 config.initial_rows = 30
 config.window_decorations = "RESIZE"
-config.hide_tab_bar_if_only_one_tab = true
-config.use_fancy_tab_bar = false
+--config.hide_tab_bar_if_only_one_tab = true
+config.use_fancy_tab_bar = true
 
 config.font_size = 14
 config.line_height = 1.25
@@ -21,13 +21,13 @@ config.font = wezterm.font("Monaspace Krypton NF", {weight="DemiBold", stretch="
 
 config.color_scheme = 'Catppuccin Mocha'
 
--- config.keys = {
---   {
---     key = 'w',
---     mods = 'CTRL',
---     action = wezterm.action.CloseCurrentPane { confirm = false },
---   },
--- }
+config.keys = {
+  {
+    key = 'w',
+    mods = 'CMD',
+    action = wezterm.action.CloseCurrentPane { confirm = false },
+  },
+}
 
   -- Hide the scrollbar when there is no scrollback or alternate screen is active
 wezterm.on("update-status", function(window, pane)
