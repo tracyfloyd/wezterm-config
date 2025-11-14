@@ -7,8 +7,13 @@ local config = wezterm.config_builder()
 config.initial_cols = 120
 config.initial_rows = 30
 config.window_decorations = "RESIZE"
---config.window_background_opacity = 0.8
---config.macos_window_background_blur = 10
+config.window_background_opacity = 0.9
+config.macos_window_background_blur = 15
+config.inactive_pane_hsb = {
+	saturation = 0.5,
+	brightness = 0.2,
+}
+-- config.text_background_opacity = 0.6
 --config.hide_tab_bar_if_only_one_tab = true
 config.use_fancy_tab_bar = false
 config.tab_bar_at_bottom = false
@@ -17,8 +22,9 @@ config.enable_tab_bar = true
 config.font_size = 14
 config.line_height = 1.25
 
--- List all available fonts: wezterm ls-fonts --list-system
-config.font = wezterm.font("Monaspace Krypton NF", { weight = "DemiBold", stretch = "Normal", style = "Normal" }) -- /Users/tracy/Library/Fonts/MonaspaceKryptonNF-SemiWideMedium.otf, CoreText
+-- To list all available fonts run: wezterm ls-fonts --list-system
+config.font = wezterm.font("Monaspace Krypton NF", { weight = "DemiBold", stretch = "Normal", style = "Normal" })
+-- /Users/tracy/Library/Fonts/MonaspaceKryptonNF-SemiWideMedium.otf, CoreText
 
 config.color_scheme = "Catppuccin Mocha"
 
