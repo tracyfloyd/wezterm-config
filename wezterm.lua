@@ -4,8 +4,8 @@ local wezterm = require("wezterm")
 -- This will hold the configuration.
 local config = wezterm.config_builder()
 
-config.initial_cols = 120
-config.initial_rows = 30
+config.initial_cols = 150
+config.initial_rows = 50
 config.window_decorations = "RESIZE"
 config.window_background_opacity = 0.9
 config.macos_window_background_blur = 15
@@ -16,7 +16,6 @@ config.inactive_pane_hsb = {
 -- config.text_background_opacity = 0.6
 --config.hide_tab_bar_if_only_one_tab = true
 config.use_fancy_tab_bar = false
-config.tab_bar_at_bottom = false
 config.enable_tab_bar = true
 
 config.font_size = 14
@@ -37,10 +36,10 @@ config.keys = {
 }
 
 config.window_padding = {
-	left = 4,
-	right = 4,
-	top = 4,
-	bottom = 4,
+	left = 8,
+	right = 8,
+	top = 8,
+	bottom = 8,
 }
 
 -- Print the workspace name in status bar
@@ -52,12 +51,14 @@ end)
 wezterm.on("update-status", function(window, pane)
 	local overrides = window:get_config_overrides() or {}
 	local dimensions = pane:get_dimensions()
-
 	overrides.enable_scroll_bar = dimensions.scrollback_rows > dimensions.viewport_rows
 		and not pane:is_alt_screen_active()
 
 	window:set_config_overrides(overrides)
 end)
+
+local workspace_switcher = wezterm.plugin.require("https://github.com/MLFlexer/smart_workspace_switcher.wezterm")
+workspace_switcher.apply_to_config(config)
 
 -- Finally, return the configuration to wezterm:
 return config
