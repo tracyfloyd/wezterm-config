@@ -1,11 +1,33 @@
-local os = require("os")
-
--- Pull in the wezterm API
+-- local os = require("os")
 local wezterm = require("wezterm")
-
--- This will hold the configuration.
 local config = wezterm.config_builder()
 
+-- ======================================================================================
+-- Session Manager ======================================================================
+local session_manager = require("wezterm-session-manager/session-manager")
+
+wezterm.on("save_session", function(window)
+	session_manager.save_state(window)
+end)
+wezterm.on("load_session", function(window)
+	session_manager.load_state(window)
+end)
+wezterm.on("restore_session", function(window)
+	session_manager.restore_state(window)
+end)
+
+wezterm.on("save_session", function(window)
+	session_manager.save_state(window)
+end)
+wezterm.on("load_session", function(window)
+	session_manager.load_state(window)
+end)
+wezterm.on("restore_session", function(window)
+	session_manager.restore_state(window)
+end)
+
+-- ======================================================================================
+-- Split Management =====================================================================
 local is_vim = function(pane)
 	local process_info = pane:get_foreground_process_info()
 	local process_name = process_info and process_info.name
@@ -46,6 +68,8 @@ local function split_nav(resize_or_move, key) -- https://github.com/letieu/wezte
 	}
 end
 
+-- ======================================================================================
+-- Keymaps ==============================================================================
 config.leader = {
 	key = "a",
 	mods = "CTRL",
@@ -53,18 +77,18 @@ config.leader = {
 }
 
 config.keys = {
-	-- move between split panes
+	-- Pane: Move between split panes
 	split_nav("move", "h"),
 	split_nav("move", "j"),
 	split_nav("move", "k"),
 	split_nav("move", "l"),
-	-- resize panes
+	-- Pane: Resize panes
 	split_nav("resize", "h"),
 	split_nav("resize", "j"),
 	split_nav("resize", "k"),
 	split_nav("resize", "l"),
 
-	-- Vertical split
+	-- Pane: Create Vertical split
 	{
 		key = "|",
 		mods = "LEADER",
@@ -73,60 +97,53 @@ config.keys = {
 			size = { Percent = 50 },
 		}),
 	},
-
-	-- Horizontal split
+	-- Pane: Create Horizontal split
 	{
-		key = "-",
+		key = "=",
 		mods = "LEADER",
 		action = wezterm.action.SplitPane({
 			direction = "Down",
 			size = { Percent = 50 },
 		}),
 	},
-
-	-- Swap panes
+	-- Pane: Swap panes
 	{
 		key = "[",
 		mods = "LEADER",
 		action = wezterm.action.PaneSelect({ mode = "SwapWithActiveKeepFocus" }),
 	},
-
-	-- Move to previous pane
+	-- Pane: Move to previous pane
 	{
 		key = ",",
 		mods = "LEADER",
 		action = wezterm.action.ActivatePaneDirection("Prev"),
 	},
-
-	-- Move to next pane
+	-- Pane: Move to next pane
 	{
 		key = ".",
 		mods = "LEADER",
 		action = wezterm.action.ActivatePaneDirection("Next"),
 	},
-
-	-- Close current pane. If is last pane close tab. (Command + w)
+	-- Pane: Close current pane. If is last pane close tab. (Command + w)
 	{
 		key = "w",
 		mods = "CMD",
 		action = wezterm.action.CloseCurrentPane({ confirm = false }),
 	},
-
-	-- Show tab navigator (Command + Shift + T)
-	{
-		key = "T",
-		mods = "CMD",
-		action = wezterm.action.ShowTabNavigator,
-	},
-
-	-- Toggle zoom of current pane (Command + Shift + F)
+	-- Pane: Toggle zoom of current pane (Command + Shift + F)
 	{
 		key = "F",
 		mods = "CMD",
 		action = wezterm.action.TogglePaneZoomState,
 	},
 
-	-- Rename current tab (Command + Shift + R)
+	-- Tab: Show tab navigator (Command + Shift + T)
+	{
+		key = "T",
+		mods = "CMD",
+		action = wezterm.action.ShowTabNavigator,
+	},
+	-- Tab: Rename current tab (Command + Shift + R)
 	{
 		key = "R",
 		mods = "CMD",
@@ -140,7 +157,25 @@ config.keys = {
 		}),
 	},
 
-	-- Rename current Workspace
+	-- Session: Save Session
+	{
+		key = "S",
+		mods = "LEADER",
+		action = wezterm.action({ EmitEvent = "save_session" }),
+	},
+	-- Session: Load Session
+	{
+		key = "L",
+		mods = "LEADER",
+		action = wezterm.action({ EmitEvent = "load_session" }),
+	},
+	-- Session: Restore Session
+	{
+		key = "R",
+		mods = "LEADER",
+		action = wezterm.action({ EmitEvent = "restore_session" }),
+	},
+	-- Workspace: Rename current Workspace
 	{
 		key = "$",
 		mods = "LEADER|SHIFT",
@@ -153,16 +188,37 @@ config.keys = {
 			end),
 		}),
 	},
-
-	-- Show list of workspaces
+	-- Workspace: Show list of workspaces
 	{
 		key = "s",
 		mods = "LEADER",
 		action = wezterm.action.ShowLauncherArgs({ flags = "WORKSPACES" }),
 	},
+	-- Worspace: Save Session
+	{
+		key = "S",
+		mods = "LEADER",
+		action = wezterm.action({ EmitEvent = "save_session" }),
+	},
+	-- Worspace: Load Session
+	{
+		key = "L",
+		mods = "LEADER",
+		action = wezterm.action({ EmitEvent = "load_session" }),
+	},
+	-- Worspace: Restore Session
+	{
+		key = "R",
+		mods = "LEADER",
+		action = wezterm.action({ EmitEvent = "restore_session" }),
+	},
+
 	-- { key = "[", mods = "LEADER", action = wezterm.action.ActivateCopyMode },
 }
 
+-- ======================================================================================
+-- Other Settings =======================================================================
+-- TODO Organize these settings
 config.initial_cols = 150
 config.initial_rows = 50
 config.window_decorations = "RESIZE"
@@ -178,7 +234,7 @@ config.switch_to_last_active_tab_when_closing_tab = true
 config.use_fancy_tab_bar = true
 config.tab_max_width = 100
 config.enable_tab_bar = true
-config.pane_focus_follows_mouse = true
+-- config.pane_focus_follows_mouse = true
 config.scrollback_lines = 5000
 
 config.font_size = 14
@@ -209,15 +265,16 @@ config.window_padding = {
 config.window_frame = {
 	font_size = 11,
 	font = wezterm.font("Monaspace Krypton NF", { weight = "Bold", stretch = "Normal", style = "Normal" }),
-	-- Window Border
-	-- border_left_width = "0.5cell",
-	-- border_right_width = "0.5cell",
-	-- border_bottom_height = "0.25cell",
-	-- border_top_height = "0.25cell",
-	-- border_left_color = "#3b3052",
-	-- border_right_color = "#3b3052",
-	-- border_bottom_color = "#3b3052",
-	-- border_top_color = "#3b3052",
+	-- Window Border Size
+	border_top_height = "0.2cell",
+	border_bottom_height = "0.2cell",
+	border_left_width = "0.4cell",
+	border_right_width = "0.4cell",
+	-- Window Border Color
+	border_top_color = "#6C7087",
+	border_bottom_color = "#6C7087",
+	border_left_color = "#6C7087",
+	border_right_color = "#6C7087",
 	--Titlebar
 	active_titlebar_bg = "#2f2642",
 	-- active_titlebar_fg = "#d4d4d4",
@@ -245,6 +302,16 @@ wezterm.on("update-status", function(window, pane)
 		and not pane:is_alt_screen_active()
 
 	window:set_config_overrides(overrides)
+end)
+
+-- load the previous configuration using the `gui-startup` event:
+local mux = wezterm.mux
+wezterm.on("gui-startup", function(cmd)
+	local tab, pane, window = mux.spawn_window(cmd or {})
+	-- maximize window when open
+	-- window:gui_window():maximize()
+	-- restore previous session state
+	session_manager.restore_state(window:gui_window())
 end)
 
 -- Finally, return the configuration to wezterm:
