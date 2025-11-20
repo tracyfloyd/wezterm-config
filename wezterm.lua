@@ -1,8 +1,167 @@
+local os = require("os")
+
 -- Pull in the wezterm API
 local wezterm = require("wezterm")
 
 -- This will hold the configuration.
 local config = wezterm.config_builder()
+
+local is_vim = function(pane)
+	local process_info = pane:get_foreground_process_info()
+	local process_name = process_info and process_info.name
+
+	return process_name == "nvim" or process_name == "vim"
+end
+
+local direction_keys = {
+	Left = "h",
+	Down = "j",
+	Up = "k",
+	Right = "l",
+	-- reverse lookup
+	h = "Left",
+	j = "Down",
+	k = "Up",
+	l = "Right",
+}
+
+local function split_nav(resize_or_move, key) -- https://github.com/letieu/wezterm-move.nvim
+	return {
+		key = key,
+		mods = resize_or_move == "resize" and "META" or "CTRL",
+		action = wezterm.action_callback(function(win, pane)
+			if is_vim(pane) then
+				-- pass the keys through to vim/nvim
+				win:perform_action({
+					SendKey = { key = key, mods = resize_or_move == "resize" and "META" or "CTRL" },
+				}, pane)
+			else
+				if resize_or_move == "resize" then
+					win:perform_action({ AdjustPaneSize = { direction_keys[key], 3 } }, pane)
+				else
+					win:perform_action({ ActivatePaneDirection = direction_keys[key] }, pane)
+				end
+			end
+		end),
+	}
+end
+
+config.leader = {
+	key = "a",
+	mods = "CTRL",
+	timeout_milliseconds = 2000,
+}
+
+config.keys = {
+	-- move between split panes
+	split_nav("move", "h"),
+	split_nav("move", "j"),
+	split_nav("move", "k"),
+	split_nav("move", "l"),
+	-- resize panes
+	split_nav("resize", "h"),
+	split_nav("resize", "j"),
+	split_nav("resize", "k"),
+	split_nav("resize", "l"),
+
+	-- Vertical split
+	{
+		key = "|",
+		mods = "LEADER",
+		action = wezterm.action.SplitPane({
+			direction = "Right",
+			size = { Percent = 50 },
+		}),
+	},
+
+	-- Horizontal split
+	{
+		key = "-",
+		mods = "LEADER",
+		action = wezterm.action.SplitPane({
+			direction = "Down",
+			size = { Percent = 50 },
+		}),
+	},
+
+	-- Swap panes
+	{
+		key = "[",
+		mods = "LEADER",
+		action = wezterm.action.PaneSelect({ mode = "SwapWithActiveKeepFocus" }),
+	},
+
+	-- Move to previous pane
+	{
+		key = ",",
+		mods = "LEADER",
+		action = wezterm.action.ActivatePaneDirection("Prev"),
+	},
+
+	-- Move to next pane
+	{
+		key = ".",
+		mods = "LEADER",
+		action = wezterm.action.ActivatePaneDirection("Next"),
+	},
+
+	-- Close current pane. If is last pane close tab. (Command + w)
+	{
+		key = "w",
+		mods = "CMD",
+		action = wezterm.action.CloseCurrentPane({ confirm = false }),
+	},
+
+	-- Show tab navigator (Command + Shift + T)
+	{
+		key = "T",
+		mods = "CMD",
+		action = wezterm.action.ShowTabNavigator,
+	},
+
+	-- Toggle zoom of current pane (Command + Shift + F)
+	{
+		key = "F",
+		mods = "CMD",
+		action = wezterm.action.TogglePaneZoomState,
+	},
+
+	-- Rename current tab (Command + Shift + R)
+	{
+		key = "R",
+		mods = "CMD",
+		action = wezterm.action.PromptInputLine({
+			description = "Enter new name for tab",
+			action = wezterm.action_callback(function(window, pane, line)
+				if line then
+					window:active_tab():set_title(line)
+				end
+			end),
+		}),
+	},
+
+	-- Rename current Workspace
+	{
+		key = "$",
+		mods = "LEADER|SHIFT",
+		action = wezterm.action.PromptInputLine({
+			description = "Enter new name for Workspace",
+			action = wezterm.action_callback(function(window, pane, line)
+				if line then
+					wezterm.mux.rename_workspace(window:mux_window():get_workspace(), line)
+				end
+			end),
+		}),
+	},
+
+	-- Show list of workspaces
+	{
+		key = "s",
+		mods = "LEADER",
+		action = wezterm.action.ShowLauncherArgs({ flags = "WORKSPACES" }),
+	},
+	-- { key = "[", mods = "LEADER", action = wezterm.action.ActivateCopyMode },
+}
 
 config.initial_cols = 150
 config.initial_rows = 50
@@ -15,8 +174,12 @@ config.inactive_pane_hsb = {
 }
 -- config.text_background_opacity = 0.6
 --config.hide_tab_bar_if_only_one_tab = true
-config.use_fancy_tab_bar = false
+config.switch_to_last_active_tab_when_closing_tab = true
+config.use_fancy_tab_bar = true
+config.tab_max_width = 100
 config.enable_tab_bar = true
+config.pane_focus_follows_mouse = true
+config.scrollback_lines = 5000
 
 config.font_size = 14
 config.line_height = 1.25
@@ -27,24 +190,51 @@ config.font = wezterm.font("Monaspace Krypton NF", { weight = "DemiBold", stretc
 
 config.color_scheme = "Catppuccin Mocha"
 
-config.keys = {
-	{
-		key = "w",
-		mods = "CMD",
-		action = wezterm.action.CloseCurrentPane({ confirm = false }),
-	},
-}
+-- config.colors = {
+-- 	tab_bar = {
+-- 		active_tab = {
+-- 			fg_color = "#073642",
+-- 			bg_color = "#2aa198",
+-- 		},
+-- 	},
+-- }
 
 config.window_padding = {
-	left = 8,
-	right = 8,
-	top = 8,
-	bottom = 8,
+	left = 0,
+	right = 0,
+	top = 0,
+	bottom = 0,
+}
+
+config.window_frame = {
+	font_size = 11,
+	font = wezterm.font("Monaspace Krypton NF", { weight = "Bold", stretch = "Normal", style = "Normal" }),
+	-- Window Border
+	-- border_left_width = "0.5cell",
+	-- border_right_width = "0.5cell",
+	-- border_bottom_height = "0.25cell",
+	-- border_top_height = "0.25cell",
+	-- border_left_color = "#3b3052",
+	-- border_right_color = "#3b3052",
+	-- border_bottom_color = "#3b3052",
+	-- border_top_color = "#3b3052",
+	--Titlebar
+	active_titlebar_bg = "#2f2642",
+	-- active_titlebar_fg = "#d4d4d4",
+	-- active_titlebar_border_bottom = "#2b2042",
+	-- inactive_titlebar_bg = "#353535",
+	-- inactive_titlebar_fg = "#cccccc",
+	-- inactive_titlebar_border_bottom = "#2b2042",
+	-- Buttons
+	-- button_fg = "#cccccc",
+	-- button_bg = "#2b2042",
+	-- button_hover_fg = "#ffffff",
+	-- button_hover_bg = "#3b3052",
 }
 
 -- Print the workspace name in status bar
 wezterm.on("update-right-status", function(window, pane)
-	window:set_right_status(window:active_workspace())
+	window:set_right_status("  " .. window:active_workspace() .. "  ")
 end)
 
 -- Hide the scrollbar when there is no scrollback or alternate screen is active
@@ -56,9 +246,6 @@ wezterm.on("update-status", function(window, pane)
 
 	window:set_config_overrides(overrides)
 end)
-
-local workspace_switcher = wezterm.plugin.require("https://github.com/MLFlexer/smart_workspace_switcher.wezterm")
-workspace_switcher.apply_to_config(config)
 
 -- Finally, return the configuration to wezterm:
 return config
