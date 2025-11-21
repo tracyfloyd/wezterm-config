@@ -1,10 +1,9 @@
-# Ignore everything
-*
+# Blocklist files/folders in same directory as the .gitignore file
+/*
 
-# But not these files...
+# Includelist some files
 !.gitignore
-!.DS_Stores
 !wezterm.lua
 
-# ...even if they are in subdirectories
-!*/
+# Ignore all files named .DS_Store
+**/.DS_Store
