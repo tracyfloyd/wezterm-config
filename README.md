@@ -1,6 +1,8 @@
 ## Keyboard Shortcuts
 
 ```
+Pane Management:
+
 CTRL hjkl       →  Move Focus To Pane
 OPTION hjkl     →  Resize Current Pane (Not working when in nvim)
 
@@ -15,12 +17,18 @@ CMD [           →  Focus Prev Pane
 CMD ]           →  Focus Next Pane
 CMD SHIFT 8     →  Swap Panes
 
+
+Tab Management:
+
 CMD SHIFT T     →  Show All Tabs
 CMD SHIFT R     →  Rename Current Tab
 
-CTRL a, w       →  Show All Workspaces (Session)
-CTRL a, n       →  Rename Current Workspace (Session)
-CTRL a, s       →  Save Workspace (Session)
-CTRL a, l       →  Load Workspace (Session)
-CTRL a, r       →  Restore Workspace (Session)
+
+Workspace Management:
+
+LEADER w        →  Show All Workspaces (Session)
+LEADER n        →  Rename Current Workspace (Session)
+LEADER s        →  Save Workspace (Session)
+LEADER l        →  Load Workspace (Session)
+LEADER r        →  Restore Workspace (Session)
 ```
