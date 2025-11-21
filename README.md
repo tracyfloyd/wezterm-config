@@ -21,7 +21,7 @@ CMD SHIFT 8     →  Swap Panes
 Tab Management:
 
 CMD SHIFT T     →  Show All Tabs
-CMD SHIFT R     →  Rename Current Tab
+CMD SHIFT N     →  Rename Current Tab
 
 
 Workspace Management:
