@@ -2,29 +2,44 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
--- ======================================================================================
--- Session Manager ======================================================================
-local session_manager = require("wezterm-session-manager/session-manager")
-
-wezterm.on("save_session", function(window)
-	session_manager.save_state(window)
-end)
-wezterm.on("load_session", function(window)
-	session_manager.load_state(window)
-end)
-wezterm.on("restore_session", function(window)
-	session_manager.restore_state(window)
-end)
-
--- load the previous configuration using the `gui-startup` event:
--- local mux = wezterm.mux
--- wezterm.on("gui-startup", function(cmd)
--- 	local tab, pane, window = mux.spawn_window(cmd or {})
--- 	-- maximize window when open
--- 	-- window:gui_window():maximize()
--- 	-- restore previous session state
--- 	session_manager.restore_state(window:gui_window())
--- end)
+local tabline = wezterm.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
+tabline.setup({
+	options = {
+		icons_enabled = true,
+		theme = "Catppuccin Mocha",
+		tabs_enabled = true,
+		theme_overrides = {},
+		section_separators = {
+			left = wezterm.nerdfonts.pl_left_hard_divider,
+			right = wezterm.nerdfonts.pl_right_hard_divider,
+		},
+		component_separators = {
+			left = wezterm.nerdfonts.pl_left_soft_divider,
+			right = wezterm.nerdfonts.pl_right_soft_divider,
+		},
+		tab_separators = {
+			left = wezterm.nerdfonts.pl_left_hard_divider,
+			right = wezterm.nerdfonts.pl_right_hard_divider,
+		},
+	},
+	sections = {
+		tabline_a = { "mode" },
+		tabline_b = { "workspace" },
+		tabline_c = { " " },
+		tab_active = {
+			"index",
+			{ "parent", padding = 0 },
+			"/",
+			{ "cwd", padding = { left = 0, right = 1 } },
+			{ "zoomed", padding = 0 },
+		},
+		tab_inactive = { "index", { "process", padding = { left = 0, right = 1 } } },
+		-- tabline_x = { "ram", "cpu" },
+		-- tabline_y = { "datetime", "battery" },
+		-- tabline_z = { "domain" },
+	},
+	extensions = {},
+})
 
 -- ======================================================================================
 -- Split Management =====================================================================
@@ -219,50 +234,42 @@ config.keys = {
 
 -- ======================================================================================
 -- Other Settings =======================================================================
--- TODO Organize these settings
-config.initial_cols = 150
-config.initial_rows = 50
-config.window_decorations = "RESIZE"
-config.window_background_opacity = 0.9
-config.macos_window_background_blur = 15
-config.inactive_pane_hsb = {
-	saturation = 0.5,
-	brightness = 0.2,
-}
--- config.text_background_opacity = 0.6
---config.hide_tab_bar_if_only_one_tab = true
-config.switch_to_last_active_tab_when_closing_tab = true
-config.use_fancy_tab_bar = true
-config.tab_max_width = 100
-config.enable_tab_bar = true
--- config.pane_focus_follows_mouse = true
-config.scrollback_lines = 5000
 
-config.font_size = 14
-config.line_height = 1.25
-
+config.color_scheme = "Catppuccin Mocha"
 -- To list all available fonts run: wezterm ls-fonts --list-system
 config.font = wezterm.font("Monaspace Krypton NF", { weight = "DemiBold", stretch = "Normal", style = "Normal" })
 -- /Users/tracy/Library/Fonts/MonaspaceKryptonNF-SemiWideMedium.otf, CoreText
+config.font_size = 14
+config.line_height = 1.25
 
-config.color_scheme = "Catppuccin Mocha"
+config.initial_cols = 150
+config.initial_rows = 50
 
--- config.colors = {
---  tab_bar = {
---    active_tab = {
---      fg_color = "#073642",
---      bg_color = "#2aa198",
---    },
---  },
--- }
+-- config.text_background_opacity = 0.6
+config.scrollback_lines = 5000
 
+-- Tabs
+config.enable_tab_bar = true
+config.use_fancy_tab_bar = true
+config.switch_to_last_active_tab_when_closing_tab = true
+config.tab_max_width = 100
+
+-- Window
+config.window_decorations = "RESIZE"
+--[[
+The following flags are also supported:
+MACOS_FORCE_SQUARE_CORNERS - on macOS, force the window to have square rather than rounded corners. It is not compatible with TITLE or INTEGRATED_BUTTONS
+MACOS_USE_BACKGROUND_COLOR_AS_TITLEBAR_COLOR - on macOS, change the system titlebar background color to match the terminal background color defined by your configuration. This option doesn't make sense to use without also including TITLE|RESIZE in the set of decorations.
+--]]
+--
+config.window_background_opacity = 0.9
+config.macos_window_background_blur = 15
 config.window_padding = {
 	left = 0,
 	right = 0,
 	top = 0,
 	bottom = 0,
 }
-
 config.window_frame = {
 	font_size = 11,
 	font = wezterm.font("Monaspace Krypton NF", { weight = "Bold", stretch = "Normal", style = "Normal" }),
@@ -290,20 +297,27 @@ config.window_frame = {
 	-- button_hover_bg = "#3b3052",
 }
 
+-- Panes
+-- config.pane_focus_follows_mouse = true
+config.inactive_pane_hsb = {
+	saturation = 0.5,
+	brightness = 0.2,
+}
+
 -- Print the workspace name in status bar
 wezterm.on("update-right-status", function(window, pane)
 	window:set_right_status("  " .. window:active_workspace() .. "  ")
 end)
 
 -- Hide the scrollbar when there is no scrollback or alternate screen is active
-wezterm.on("update-status", function(window, pane)
-	local overrides = window:get_config_overrides() or {}
-	local dimensions = pane:get_dimensions()
-	overrides.enable_scroll_bar = dimensions.scrollback_rows > dimensions.viewport_rows
-		and not pane:is_alt_screen_active()
-
-	window:set_config_overrides(overrides)
-end)
+-- wezterm.on("update-status", function(window, pane)
+-- 	local overrides = window:get_config_overrides() or {}
+-- 	local dimensions = pane:get_dimensions()
+-- 	overrides.enable_scroll_bar = dimensions.scrollback_rows > dimensions.viewport_rows
+-- 		and not pane:is_alt_screen_active()
+--
+-- 	window:set_config_overrides(overrides)
+-- end)
 
 -- Finally, return the configuration to wezterm:
 return config
