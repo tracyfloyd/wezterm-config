@@ -3,6 +3,7 @@
 
 # Includelist some files
 !.gitignore
+!README.md
 !wezterm.lua
 
 # Ignore all files named .DS_Store

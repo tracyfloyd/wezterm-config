@@ -16,6 +16,16 @@ wezterm.on("restore_session", function(window)
 	session_manager.restore_state(window)
 end)
 
+-- load the previous configuration using the `gui-startup` event:
+-- local mux = wezterm.mux
+-- wezterm.on("gui-startup", function(cmd)
+-- 	local tab, pane, window = mux.spawn_window(cmd or {})
+-- 	-- maximize window when open
+-- 	-- window:gui_window():maximize()
+-- 	-- restore previous session state
+-- 	session_manager.restore_state(window:gui_window())
+-- end)
+
 -- ======================================================================================
 -- Split Management =====================================================================
 local is_vim = function(pane)
@@ -293,16 +303,6 @@ wezterm.on("update-status", function(window, pane)
 		and not pane:is_alt_screen_active()
 
 	window:set_config_overrides(overrides)
-end)
-
--- load the previous configuration using the `gui-startup` event:
-local mux = wezterm.mux
-wezterm.on("gui-startup", function(cmd)
-	local tab, pane, window = mux.spawn_window(cmd or {})
-	-- maximize window when open
-	-- window:gui_window():maximize()
-	-- restore previous session state
-	session_manager.restore_state(window:gui_window())
 end)
 
 -- Finally, return the configuration to wezterm:
