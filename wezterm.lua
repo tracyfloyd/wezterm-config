@@ -16,16 +16,6 @@ wezterm.on("restore_session", function(window)
 	session_manager.restore_state(window)
 end)
 
-wezterm.on("save_session", function(window)
-	session_manager.save_state(window)
-end)
-wezterm.on("load_session", function(window)
-	session_manager.load_state(window)
-end)
-wezterm.on("restore_session", function(window)
-	session_manager.restore_state(window)
-end)
-
 -- ======================================================================================
 -- Split Management =====================================================================
 local is_vim = function(pane)
@@ -48,6 +38,7 @@ local direction_keys = {
 }
 
 local function split_nav(resize_or_move, key) -- https://github.com/letieu/wezterm-move.nvim
+	-- Note: META is Alt on Windows; Option on macOS
 	return {
 		key = key,
 		mods = resize_or_move == "resize" and "META" or "CTRL",
@@ -88,47 +79,41 @@ config.keys = {
 	split_nav("resize", "k"),
 	split_nav("resize", "l"),
 
-	-- Pane: Create Vertical split
+	-- Pane: Split Right (Comamnd RightArrow)
 	{
-		key = "|",
-		mods = "LEADER",
+		key = "RightArrow",
+		mods = "CMD",
 		action = wezterm.action.SplitPane({
 			direction = "Right",
 			size = { Percent = 50 },
 		}),
 	},
-	-- Pane: Create Horizontal split
+	-- Pane: Split Left (Comamnd LefttArrow)
 	{
-		key = "=",
-		mods = "LEADER",
+		key = "LeftArrow",
+		mods = "CMD",
+		action = wezterm.action.SplitPane({
+			direction = "Left",
+			size = { Percent = 50 },
+		}),
+	},
+	-- Pane: Split Up (Comamnd UpArrow)
+	{
+		key = "UpArrow",
+		mods = "CMD",
+		action = wezterm.action.SplitPane({
+			direction = "Up",
+			size = { Percent = 50 },
+		}),
+	},
+	-- Pane Split Down (Comamnd DownArrow)
+	{
+		key = "DownArrow",
+		mods = "CMD",
 		action = wezterm.action.SplitPane({
 			direction = "Down",
 			size = { Percent = 50 },
 		}),
-	},
-	-- Pane: Swap panes
-	{
-		key = "[",
-		mods = "LEADER",
-		action = wezterm.action.PaneSelect({ mode = "SwapWithActiveKeepFocus" }),
-	},
-	-- Pane: Move to previous pane
-	{
-		key = ",",
-		mods = "LEADER",
-		action = wezterm.action.ActivatePaneDirection("Prev"),
-	},
-	-- Pane: Move to next pane
-	{
-		key = ".",
-		mods = "LEADER",
-		action = wezterm.action.ActivatePaneDirection("Next"),
-	},
-	-- Pane: Close current pane. If is last pane close tab. (Command + w)
-	{
-		key = "w",
-		mods = "CMD",
-		action = wezterm.action.CloseCurrentPane({ confirm = false }),
 	},
 	-- Pane: Toggle zoom of current pane (Command + Shift + F)
 	{
@@ -136,16 +121,40 @@ config.keys = {
 		mods = "CMD",
 		action = wezterm.action.TogglePaneZoomState,
 	},
+	-- Pane: Swap panes (Command + Shift 8)
+	{
+		key = "*",
+		mods = "CMD",
+		action = wezterm.action.PaneSelect({ mode = "SwapWithActiveKeepFocus" }),
+	},
+	-- Pane: Move to previous pane (Command + [)
+	{
+		key = "[",
+		mods = "CMD",
+		action = wezterm.action.ActivatePaneDirection("Prev"),
+	},
+	-- Pane: Move to next pane (Comamnd + ])
+	{
+		key = "]",
+		mods = "CMD",
+		action = wezterm.action.ActivatePaneDirection("Next"),
+	},
+	-- Pane: Close current Pane; close Tab if is last Pane (Command + w)
+	{
+		key = "w",
+		mods = "CMD",
+		action = wezterm.action.CloseCurrentPane({ confirm = false }),
+	},
 
-	-- Tab: Show tab navigator (Command + Shift + T)
+	-- Tab: Show All Tabs (Command + Shift + T)
 	{
 		key = "T",
 		mods = "CMD",
 		action = wezterm.action.ShowTabNavigator,
 	},
-	-- Tab: Rename current tab (Command + Shift + R)
+	-- Tab: Rename Tab (Command + Shift + N)
 	{
-		key = "R",
+		key = "N",
 		mods = "CMD",
 		action = wezterm.action.PromptInputLine({
 			description = "Enter new name for tab",
@@ -157,28 +166,16 @@ config.keys = {
 		}),
 	},
 
-	-- Session: Save Session
+	-- Workspace: Show All Workspaces (Sessions)
 	{
-		key = "S",
+		key = "w",
 		mods = "LEADER",
-		action = wezterm.action({ EmitEvent = "save_session" }),
+		action = wezterm.action.ShowLauncherArgs({ flags = "WORKSPACES" }),
 	},
-	-- Session: Load Session
+	-- Workspace: Rename Workspace (Session)
 	{
-		key = "L",
+		key = "n",
 		mods = "LEADER",
-		action = wezterm.action({ EmitEvent = "load_session" }),
-	},
-	-- Session: Restore Session
-	{
-		key = "R",
-		mods = "LEADER",
-		action = wezterm.action({ EmitEvent = "restore_session" }),
-	},
-	-- Workspace: Rename current Workspace
-	{
-		key = "$",
-		mods = "LEADER|SHIFT",
 		action = wezterm.action.PromptInputLine({
 			description = "Enter new name for Workspace",
 			action = wezterm.action_callback(function(window, pane, line)
@@ -188,27 +185,21 @@ config.keys = {
 			end),
 		}),
 	},
-	-- Workspace: Show list of workspaces
+	-- Worspace: Save Workspace (Session)
 	{
 		key = "s",
 		mods = "LEADER",
-		action = wezterm.action.ShowLauncherArgs({ flags = "WORKSPACES" }),
-	},
-	-- Worspace: Save Session
-	{
-		key = "S",
-		mods = "LEADER",
 		action = wezterm.action({ EmitEvent = "save_session" }),
 	},
-	-- Worspace: Load Session
+	-- Worspace: Load Workspace (Session)
 	{
-		key = "L",
+		key = "l",
 		mods = "LEADER",
 		action = wezterm.action({ EmitEvent = "load_session" }),
 	},
-	-- Worspace: Restore Session
+	-- Worspace: Restore Workspace (Session)
 	{
-		key = "R",
+		key = "r",
 		mods = "LEADER",
 		action = wezterm.action({ EmitEvent = "restore_session" }),
 	},
@@ -247,12 +238,12 @@ config.font = wezterm.font("Monaspace Krypton NF", { weight = "DemiBold", stretc
 config.color_scheme = "Catppuccin Mocha"
 
 -- config.colors = {
--- 	tab_bar = {
--- 		active_tab = {
--- 			fg_color = "#073642",
--- 			bg_color = "#2aa198",
--- 		},
--- 	},
+--  tab_bar = {
+--    active_tab = {
+--      fg_color = "#073642",
+--      bg_color = "#2aa198",
+--    },
+--  },
 -- }
 
 config.window_padding = {
