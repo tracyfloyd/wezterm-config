@@ -2,45 +2,6 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
-local tabline = wezterm.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
-tabline.setup({
-	options = {
-		icons_enabled = true,
-		theme = "Catppuccin Mocha",
-		tabs_enabled = true,
-		theme_overrides = {},
-		section_separators = {
-			left = wezterm.nerdfonts.pl_left_hard_divider,
-			right = wezterm.nerdfonts.pl_right_hard_divider,
-		},
-		component_separators = {
-			left = wezterm.nerdfonts.pl_left_soft_divider,
-			right = wezterm.nerdfonts.pl_right_soft_divider,
-		},
-		tab_separators = {
-			left = wezterm.nerdfonts.pl_left_hard_divider,
-			right = wezterm.nerdfonts.pl_right_hard_divider,
-		},
-	},
-	sections = {
-		tabline_a = { "mode" },
-		tabline_b = { "workspace" },
-		tabline_c = { " " },
-		tab_active = {
-			"index",
-			{ "parent", padding = 0 },
-			"/",
-			{ "cwd", padding = { left = 0, right = 1 } },
-			{ "zoomed", padding = 0 },
-		},
-		tab_inactive = { "index", { "process", padding = { left = 0, right = 1 } } },
-		-- tabline_x = { "ram", "cpu" },
-		-- tabline_y = { "datetime", "battery" },
-		-- tabline_z = { "domain" },
-	},
-	extensions = {},
-})
-
 -- ======================================================================================
 -- Split Management =====================================================================
 local is_vim = function(pane)
@@ -250,51 +211,64 @@ config.scrollback_lines = 5000
 
 -- Tabs
 config.enable_tab_bar = true
-config.use_fancy_tab_bar = true
+config.show_new_tab_button_in_tab_bar = false
+config.use_fancy_tab_bar = false
 config.switch_to_last_active_tab_when_closing_tab = true
 config.tab_max_width = 100
-
+config.colors = {
+	tab_bar = {
+		background = "#11111C", -- Background color of the entire tab bar
+		active_tab = {
+			bg_color = "#1E1E2F", -- Background color of the active tab
+			fg_color = "#FFFFFF", -- Foreground color (text) of the active tab
+			intensity = "Normal",
+		},
+		inactive_tab = {
+			bg_color = "#313244", -- Background color of inactive tabs
+			fg_color = "#cdd6f4", -- Foreground color (text) of inactive tabs
+			intensity = "Normal",
+		},
+		inactive_tab_hover = {
+			bg_color = "#45475a", -- Background color of inactive tabs on hover
+			fg_color = "#cdd6f4", -- Foreground color (text) of inactive tabs on hover
+		},
+		new_tab = {
+			bg_color = "#89b4fa", -- Background color of the new tab button
+			fg_color = "#1e1e2e", -- Foreground color (icon) of the new tab button
+		},
+		new_tab_hover = {
+			bg_color = "#74c7ec", -- Background color of the new tab button on hover
+			fg_color = "#1e1e2e", -- Foreground color (icon) of the new tab button on hover
+		},
+	},
+}
 -- Window
-config.window_decorations = "RESIZE"
---[[
-The following flags are also supported:
-MACOS_FORCE_SQUARE_CORNERS - on macOS, force the window to have square rather than rounded corners. It is not compatible with TITLE or INTEGRATED_BUTTONS
-MACOS_USE_BACKGROUND_COLOR_AS_TITLEBAR_COLOR - on macOS, change the system titlebar background color to match the terminal background color defined by your configuration. This option doesn't make sense to use without also including TITLE|RESIZE in the set of decorations.
---]]
---
+config.window_decorations = "RESIZE | MACOS_FORCE_ENABLE_SHADOW"
+-- config.window_decorations = "RESIZE | MACOS_FORCE_SQUARE_CORNERS"
+-- config.window_decorations = "RESIZE | MACOS_USE_BACKGROUND_COLOR_AS_TITLEBAR_COLOR | TITLE"
+-- https://wezterm.org/config/lua/config/window_decorations.html
+
 config.window_background_opacity = 0.9
 config.macos_window_background_blur = 15
 config.window_padding = {
-	left = 0,
-	right = 0,
-	top = 0,
+	left = 16,
+	right = 8,
+	top = 16,
 	bottom = 0,
 }
 config.window_frame = {
 	font_size = 11,
 	font = wezterm.font("Monaspace Krypton NF", { weight = "Bold", stretch = "Normal", style = "Normal" }),
 	-- Window Border Size
-	border_top_height = "0.2cell",
-	border_bottom_height = "0.2cell",
-	border_left_width = "0.4cell",
-	border_right_width = "0.4cell",
+	border_top_height = 16,
+	border_bottom_height = 16,
+	border_left_width = 16,
+	border_right_width = 16,
 	-- Window Border Color
-	border_top_color = "#6C7087",
-	border_bottom_color = "#6C7087",
-	border_left_color = "#6C7087",
-	border_right_color = "#6C7087",
-	--Titlebar
-	active_titlebar_bg = "#2f2642",
-	-- active_titlebar_fg = "#d4d4d4",
-	-- active_titlebar_border_bottom = "#2b2042",
-	-- inactive_titlebar_bg = "#353535",
-	-- inactive_titlebar_fg = "#cccccc",
-	-- inactive_titlebar_border_bottom = "#2b2042",
-	-- Buttons
-	-- button_fg = "#cccccc",
-	-- button_bg = "#2b2042",
-	-- button_hover_fg = "#ffffff",
-	-- button_hover_bg = "#3b3052",
+	border_top_color = "#11111C",
+	border_bottom_color = "#11111C",
+	border_left_color = "#11111C",
+	border_right_color = "#11111C",
 }
 
 -- Panes
@@ -303,11 +277,6 @@ config.inactive_pane_hsb = {
 	saturation = 0.5,
 	brightness = 0.2,
 }
-
--- Print the workspace name in status bar
-wezterm.on("update-right-status", function(window, pane)
-	window:set_right_status("  " .. window:active_workspace() .. "  ")
-end)
 
 -- Hide the scrollbar when there is no scrollback or alternate screen is active
 -- wezterm.on("update-status", function(window, pane)
@@ -318,6 +287,52 @@ end)
 --
 -- 	window:set_config_overrides(overrides)
 -- end)
+
+local tabline = wezterm.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
+tabline.setup({
+	options = {
+		icons_enabled = true,
+		theme = "Catppuccin Mocha",
+		tabs_enabled = true,
+		theme_overrides = {
+			normal_mode = {
+				a = { fg = "#444444", bg = "#11111C" },
+				b = { fg = "#89b4fa", bg = "#313244" },
+				c = { fg = "#cdd6f4", bg = "#181825" },
+				y = { fg = "#CDCDCD", bg = "11111C" },
+				z = { fg = "#CDCDCD", bg = "11111C" },
+			},
+			tab = {
+				active = { fg = "#FFFFFF", bg = "#1E1E2F" },
+				inactive = { fg = "#555555", bg = "#11111C" },
+				inactive_hover = { fg = "#999999", bg = "#1D1F2F" },
+			},
+		},
+		section_separators = {
+			left = "",
+			right = "",
+		},
+		component_separators = {
+			left = wezterm.nerdfonts.pl_left_soft_divider,
+			right = wezterm.nerdfonts.pl_right_soft_divider,
+		},
+		tab_separators = {
+			left = " ",
+			right = "",
+		},
+	},
+	sections = {
+		tabline_a = { " " },
+		tabline_b = {},
+		tabline_c = {},
+		tab_active = { "index", { "tab", padding = { left = 0, right = 1 } } },
+		tab_inactive = { "index", { "tab", padding = { left = 0, right = 1 } } },
+		tabline_x = {},
+		tabline_y = { "workspace" },
+		tabline_z = { " " },
+	},
+	extensions = {},
+})
 
 -- Finally, return the configuration to wezterm:
 return config
