@@ -67,7 +67,7 @@ config.keys = {
 
 	-- Pane: Split Right (Comamnd RightArrow)
 	{
-		key = "RightArrow",
+		key = "L",
 		mods = "CMD",
 		action = wezterm.action.SplitPane({
 			direction = "Right",
@@ -76,7 +76,7 @@ config.keys = {
 	},
 	-- Pane: Split Left (Comamnd LefttArrow)
 	{
-		key = "LeftArrow",
+		key = "H",
 		mods = "CMD",
 		action = wezterm.action.SplitPane({
 			direction = "Left",
@@ -85,7 +85,7 @@ config.keys = {
 	},
 	-- Pane: Split Up (Comamnd UpArrow)
 	{
-		key = "UpArrow",
+		key = "K",
 		mods = "CMD",
 		action = wezterm.action.SplitPane({
 			direction = "Up",
@@ -94,7 +94,7 @@ config.keys = {
 	},
 	-- Pane Split Down (Comamnd DownArrow)
 	{
-		key = "DownArrow",
+		key = "J",
 		mods = "CMD",
 		action = wezterm.action.SplitPane({
 			direction = "Down",
@@ -171,24 +171,6 @@ config.keys = {
 			end),
 		}),
 	},
-	-- Worspace: Save Workspace (Session)
-	{
-		key = "s",
-		mods = "LEADER",
-		action = wezterm.action({ EmitEvent = "save_session" }),
-	},
-	-- Worspace: Load Workspace (Session)
-	{
-		key = "l",
-		mods = "LEADER",
-		action = wezterm.action({ EmitEvent = "load_session" }),
-	},
-	-- Worspace: Restore Workspace (Session)
-	{
-		key = "r",
-		mods = "LEADER",
-		action = wezterm.action({ EmitEvent = "restore_session" }),
-	},
 
 	-- { key = "[", mods = "LEADER", action = wezterm.action.ActivateCopyMode },
 }
@@ -251,10 +233,10 @@ config.window_decorations = "RESIZE | MACOS_FORCE_ENABLE_SHADOW"
 config.window_background_opacity = 0.9
 config.macos_window_background_blur = 15
 config.window_padding = {
-	left = 16,
-	right = 8,
-	top = 16,
-	bottom = 0,
+	left = 12,
+	right = 0,
+	top = 12,
+	bottom = 12,
 }
 config.window_frame = {
 	font_size = 11,
