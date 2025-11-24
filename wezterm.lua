@@ -27,6 +27,7 @@ local function split_nav(resize_or_move, key) -- https://github.com/letieu/wezte
 	-- Note: META is Alt on Windows; Option on macOS
 	return {
 		key = key,
+		-- Note: META is Alt on Windows; Option on macOS
 		mods = resize_or_move == "resize" and "META" or "CTRL",
 		action = wezterm.action_callback(function(win, pane)
 			if is_vim(pane) then
@@ -65,7 +66,7 @@ config.keys = {
 	split_nav("resize", "k"),
 	split_nav("resize", "l"),
 
-	-- Pane: Split Right (Comamnd RightArrow)
+	-- Pane: Split Right (Command RightArrow)
 	{
 		key = "L",
 		mods = "CMD",
@@ -74,7 +75,7 @@ config.keys = {
 			size = { Percent = 50 },
 		}),
 	},
-	-- Pane: Split Left (Comamnd LefttArrow)
+	-- Pane: Split Left (Command LefttArrow)
 	{
 		key = "H",
 		mods = "CMD",
@@ -83,7 +84,7 @@ config.keys = {
 			size = { Percent = 50 },
 		}),
 	},
-	-- Pane: Split Up (Comamnd UpArrow)
+	-- Pane: Split Up (Command UpArrow)
 	{
 		key = "K",
 		mods = "CMD",
@@ -92,7 +93,7 @@ config.keys = {
 			size = { Percent = 50 },
 		}),
 	},
-	-- Pane Split Down (Comamnd DownArrow)
+	-- Pane Split Down (Command DownArrow)
 	{
 		key = "J",
 		mods = "CMD",
@@ -242,10 +243,10 @@ config.window_frame = {
 	font_size = 11,
 	font = wezterm.font("Monaspace Krypton NF", { weight = "Bold", stretch = "Normal", style = "Normal" }),
 	-- Window Border Size
-	border_top_height = 16,
-	border_bottom_height = 16,
-	border_left_width = 16,
-	border_right_width = 16,
+	border_top_height = 12,
+	border_bottom_height = 12,
+	border_left_width = 12,
+	border_right_width = 12,
 	-- Window Border Color
 	border_top_color = "#11111C",
 	border_bottom_color = "#11111C",
