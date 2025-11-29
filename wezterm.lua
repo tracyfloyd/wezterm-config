@@ -68,16 +68,16 @@ config.keys = {
 
 	-- Pane: Split Right (Command RightArrow)
 	{
-		key = "L",
+		key = "RightArrow",
 		mods = "CMD",
 		action = wezterm.action.SplitPane({
 			direction = "Right",
 			size = { Percent = 50 },
 		}),
 	},
-	-- Pane: Split Left (Command LefttArrow)
+	-- Pane: Split Left (Command LeftArrow)
 	{
-		key = "H",
+		key = "LeftArrow",
 		mods = "CMD",
 		action = wezterm.action.SplitPane({
 			direction = "Left",
@@ -86,7 +86,7 @@ config.keys = {
 	},
 	-- Pane: Split Up (Command UpArrow)
 	{
-		key = "K",
+		key = "UpArrow",
 		mods = "CMD",
 		action = wezterm.action.SplitPane({
 			direction = "Up",
@@ -95,7 +95,7 @@ config.keys = {
 	},
 	-- Pane Split Down (Command DownArrow)
 	{
-		key = "J",
+		key = "DownArrow",
 		mods = "CMD",
 		action = wezterm.action.SplitPane({
 			direction = "Down",
