@@ -1,71 +1,71 @@
--- local os = require("os")
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
 -- ======================================================================================
 -- Split Management =====================================================================
-local is_vim = function(pane)
-	local process_info = pane:get_foreground_process_info()
-	local process_name = process_info and process_info.name
+-- local is_vim = function(pane)
+-- 	local process_info = pane:get_foreground_process_info()
+-- 	local process_name = process_info and process_info.name
+--
+-- 	return process_name == "nvim" or process_name == "vim"
+-- end
 
-	return process_name == "nvim" or process_name == "vim"
-end
+-- local direction_keys = {
+-- 	Left = "h",
+-- 	Down = "j",
+-- 	Up = "k",
+-- 	Right = "l",
+-- 	-- reverse lookup
+-- 	h = "Left",
+-- 	j = "Down",
+-- 	k = "Up",
+-- 	l = "Right",
+-- }
 
-local direction_keys = {
-	Left = "h",
-	Down = "j",
-	Up = "k",
-	Right = "l",
-	-- reverse lookup
-	h = "Left",
-	j = "Down",
-	k = "Up",
-	l = "Right",
-}
-
-local function split_nav(resize_or_move, key) -- https://github.com/letieu/wezterm-move.nvim
-	-- Note: META is Alt on Windows; Option on macOS
-	return {
-		key = key,
-		-- Note: META is Alt on Windows; Option on macOS
-		mods = resize_or_move == "resize" and "META" or "CTRL",
-		action = wezterm.action_callback(function(win, pane)
-			if is_vim(pane) then
-				-- pass the keys through to vim/nvim
-				win:perform_action({
-					SendKey = { key = key, mods = resize_or_move == "resize" and "META" or "CTRL" },
-				}, pane)
-			else
-				if resize_or_move == "resize" then
-					win:perform_action({ AdjustPaneSize = { direction_keys[key], 3 } }, pane)
-				else
-					win:perform_action({ ActivatePaneDirection = direction_keys[key] }, pane)
-				end
-			end
-		end),
-	}
-end
+-- local function split_nav(resize_or_move, key) -- https://github.com/letieu/wezterm-move.nvim
+-- 	-- Note: META is Alt on Windows; Option on macOS
+-- 	return {
+-- 		key = key,
+-- 		-- Note: META is Alt on Windows; Option on macOS
+-- 		mods = resize_or_move == "resize" and "META" or "CTRL",
+-- 		action = wezterm.action_callback(function(win, pane)
+-- 			if is_vim(pane) then
+-- 				-- pass the keys through to vim/nvim
+-- 				win:perform_action({
+-- 					SendKey = { key = key, mods = resize_or_move == "resize" and "META" or "CTRL" },
+-- 				}, pane)
+-- 			else
+-- 				if resize_or_move == "resize" then
+-- 					win:perform_action({ AdjustPaneSize = { direction_keys[key], 3 } }, pane)
+-- 				else
+-- 					win:perform_action({ ActivatePaneDirection = direction_keys[key] }, pane)
+-- 				end
+-- 			end
+-- 		end),
+-- 	}
+-- end
 
 -- ======================================================================================
 -- Keymaps ==============================================================================
+-- Leader (Command + Shift + A)
 config.leader = {
-	key = "a",
-	mods = "CTRL",
+	key = "A",
+	mods = "CMD",
 	timeout_milliseconds = 2000,
 }
 
 config.keys = {
-	-- Pane: Move between split panes
-	split_nav("move", "h"),
-	split_nav("move", "j"),
-	split_nav("move", "k"),
-	split_nav("move", "l"),
-	-- Pane: Resize panes
-	split_nav("resize", "h"),
-	split_nav("resize", "j"),
-	split_nav("resize", "k"),
-	split_nav("resize", "l"),
-
+	-- -- Pane: Move between split panes
+	-- split_nav("move", "h"),
+	-- split_nav("move", "j"),
+	-- split_nav("move", "k"),
+	-- split_nav("move", "l"),
+	-- -- Pane: Resize panes
+	-- split_nav("resize", "h"),
+	-- split_nav("resize", "j"),
+	-- split_nav("resize", "k"),
+	-- split_nav("resize", "l"),
+	--
 	-- Pane: Split Right (Command RightArrow)
 	{
 		key = "RightArrow",
@@ -153,16 +153,16 @@ config.keys = {
 		}),
 	},
 
-	-- Workspace: Show All Workspaces (Sessions)
+	-- Workspace: Show All Workspaces
 	{
-		key = "w",
-		mods = "LEADER",
+		key = "W",
+		mods = "CMD",
 		action = wezterm.action.ShowLauncherArgs({ flags = "WORKSPACES" }),
 	},
-	-- Workspace: Rename Workspace (Session)
+	-- Workspace: Rename Workspace
 	{
-		key = "n",
-		mods = "LEADER",
+		key = "E",
+		mods = "CMD",
 		action = wezterm.action.PromptInputLine({
 			description = "Enter new name for Workspace",
 			action = wezterm.action_callback(function(window, pane, line)
@@ -317,5 +317,4 @@ tabline.setup({
 	extensions = {},
 })
 
--- Finally, return the configuration to wezterm:
 return config
