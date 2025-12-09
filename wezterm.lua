@@ -234,24 +234,24 @@ config.window_decorations = "RESIZE | MACOS_FORCE_ENABLE_SHADOW"
 config.window_background_opacity = 0.9
 config.macos_window_background_blur = 15
 config.window_padding = {
-	left = 12,
-	right = 0,
-	top = 12,
-	bottom = 12,
+	left = 2,
+	right = 2,
+	top = 2,
+	bottom = 2,
 }
 config.window_frame = {
 	font_size = 11,
 	font = wezterm.font("Monaspace Krypton NF", { weight = "Bold", stretch = "Normal", style = "Normal" }),
 	-- Window Border Size
-	border_top_height = 12,
-	border_bottom_height = 12,
-	border_left_width = 12,
-	border_right_width = 12,
+	border_top_height = 4,
+	border_bottom_height = 4,
+	border_left_width = 4,
+	border_right_width = 4,
 	-- Window Border Color
-	border_top_color = "#11111C",
-	border_bottom_color = "#11111C",
-	border_left_color = "#11111C",
-	border_right_color = "#11111C",
+	border_top_color = "#3F3D4F",
+	border_bottom_color = "#3F3D4F",
+	border_left_color = "#3F3D4F",
+	border_right_color = "#3F3D4F", -- #11111C
 }
 
 -- Panes
